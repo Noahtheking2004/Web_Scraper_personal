@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 # change based off of website
 url = "https://books.toscrape.com/"
@@ -9,6 +10,8 @@ response = requests.get(url)
 soup = BeautifulSoup(response.content, "html.parser")
 
 books = soup.find_all("article", class_="product_pod")
+
+rows = []
 # change for webstie
 for book in books:
     # title
@@ -23,9 +26,12 @@ for book in books:
     #Check price
     price = book.find("p", class_="price_color").text.strip()
 
-    print(f"Title: {title}")
-    print(f"Star Rating: {star_rating}")
-    print(f"Availability: {availability}")
-    print(f"Price: {price}")
-    print("-" * 40)
+    rows.append([title, star_rating, availability, price])
+
+with open("books.csv", "w", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Title", "Star Rating", "Availability", "Price"])
+    writer.writerow([title, star_rating, availability, price])
+
+print(f"saved {len(rows)} books to csv")
 
